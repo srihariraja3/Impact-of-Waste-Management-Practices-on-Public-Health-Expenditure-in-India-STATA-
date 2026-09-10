@@ -1,0 +1,224 @@
+# Codebook
+## Impact of Waste Management Practices on Public Health Expenditure in India
+**Dataset:** final_analysis.dta (07_Final_Data/)  
+**Observations:** 10 (one per state)  
+**Variables:** 22  
+**Created by:** 06_merge_external_data.do  
+**Last updated:** September 2026  
+
+---
+
+## Section 1: Identifiers
+
+### state_name
+- **Type:** String
+- **Label:** State name (10 study states)
+- **Values:** Assam, Bihar, Haryana, Jharkhand, Kerala, Maharashtra, Punjab, Tamil Nadu, Uttar Pradesh, West Bengal
+- **Source:** Created in 02_state_filter.do from hv024
+- **Notes:** Used as merge key across all datasets
+
+---
+
+## Section 2: NFHS-5 Sanitation Indicators (Survey-Weighted %)
+
+All indicators in this section are weighted state-level proportions, expressed as percentages (0–100). Weights use hv005/1,000,000 (standard DHS practice). Computed by 04_state_aggregation.do.
+
+### pct_improved_toilet
+- **Type:** Float, format %6.2f
+- **Label:** % HH with improved toilet (WHO/JMP)
+- **Source variable:** hv205 (NFHS-5 Household Recode)
+- **Codes classified as improved (=1):** 11 (flush/piped sewer), 12 (flush/septic tank), 13 (flush/pit), 21 (VIP latrine), 22 (pit with slab), 41 (composting toilet)
+- **Codes classified as unimproved (=0):** 14, 15, 23 (open pit), 31 (no facility/open defecation), 51, 96
+- **Missing treatment:** hv205 missing → indicator missing (0 cases)
+- **Classification standard:** WHO/JMP Joint Monitoring Programme
+- **Old project error:** Used codes 1–6, which do not exist in NFHS-5. Every household was incorrectly coded as 0.
+- **Range in data:** 58.3% (Bihar) to 99.0% (Kerala)
+
+### pct_improved_water
+- **Type:** Float, format %6.2f
+- **Label:** % HH with improved water source (WHO/JMP)
+- **Source variable:** hv201 (NFHS-5 Household Recode)
+- **Codes classified as improved (=1):** 11 (piped/dwelling), 12 (piped/yard), 13 (piped/neighbour), 14 (public tap), 21 (tube well/borehole), 31 (protected well), 41 (protected spring), 51 (rainwater), 91 (bottled), 92 (community RO)
+- **Codes classified as unimproved (=0):** 32 (unprotected well), 42 (unprotected spring), 61 (surface water), 71 (tanker), 72 (cart), 96 (other)
+- **Missing treatment:** hv201 missing → indicator missing (0 cases)
+- **Classification standard:** WHO/JMP Joint Monitoring Programme
+- **Old project error:** Used codes 10–13 only. Code 10 does not exist. Tube wells (code 21, dominant in rural India) were excluded.
+- **Range in data:** 83.4% (Jharkhand) to 98.0% (Punjab)
+
+### pct_handwashing
+- **Type:** Float, format %6.2f
+- **Label:** % HH with functional handwashing facility
+- **Source variables:** hv230a (place observed), hv230b (water present), hv232 (soap present)
+- **Coded 1 if:** hv230a=1 (place observed) AND hv230b=1 (water available) AND hv232=1 (soap present)
+- **Coded 0 if:** place not observed (hv230a≠1) OR water absent (hv230b=0) OR soap absent (hv232=0)
+- **Missing treatment:** If hv230a=1 but hv230b or hv232 system-missing → indicator missing (2 cases, <0.01%)
+- **Standard:** WHO/UNICEF JMP definition of basic handwashing facility with soap and water
+- **Old project error:** Used hv209, which is "has refrigerator" in NFHS-5, not handwashing.
+- **Range in data:** 46.8% (West Bengal) to 89.0% (Haryana)
+
+### pct_safe_waste
+- **Type:** Float, format %6.2f
+- **Label:** % HH with safe kitchen waste disposal
+- **Source variables:** sh56a–sh56x (NFHS-5 Household Recode, multiple-response)
+- **Coded 1 if:** sh56a=1 (drain/sewer) OR sh56c=1 (closed drain) OR sh56f=1 (manual collection)
+- **Coded 0 if:** none of the above safe methods used (open drain, garden reuse, other only)
+- **Missing treatment:** All households have valid sh56 responses (0 missing)
+- **Old project error:** Used hv226, which is "cooking fuel" in NFHS-5, not waste disposal.
+- **Range in data:** 17.1% (Bihar) to 71.3% (Tamil Nadu)
+
+### pct_private_toilet
+- **Type:** Float, format %6.2f
+- **Label:** % HH with private (non-shared) toilet
+- **Source variable:** hv225 (NFHS-5 Household Recode)
+- **hv225 meaning:** "Share toilet with other households" (0=No, 1=Yes, missing=no toilet)
+- **Coded 1 if:** hv225=0 (has toilet and does not share it)
+- **Coded 0 if:** hv225=1 (shares toilet) OR hv225=missing AND hv205=31 (no toilet at all)
+- **Missing treatment:** Households with no toilet (hv205=31) coded 0, not missing
+- **Old project error:** hv225 was misidentified as "safe child stool disposal" and coded backwards (hv225=1 was called "safe", but sharing a toilet is less sanitary, not more)
+- **Range in data:** 49.5% (Bihar) to 99.0% (Kerala)
+
+---
+
+## Section 3: Composite Index
+
+### wmi
+- **Type:** Float, format %6.2f
+- **Label:** Waste Management Index (simple average of 5 indicators, 0–100)
+- **Formula:** (pct_improved_toilet + pct_improved_water + pct_handwashing + pct_safe_waste + pct_private_toilet) / 5
+- **Range:** 0 to 100 (higher = better sanitation performance)
+- **Method:** Equal weighting across all five indicators
+- **Rationale:** Transparent and reproducible; no arbitrary prioritisation
+- **Created by:** 05_index_construction.do
+- **Range in data:** 55.86 (Jharkhand) to 83.78 (Haryana)
+
+### wmi_rank
+- **Type:** Integer
+- **Label:** State rank on WMI (1 = best)
+- **Values:** 1 to 10
+- **Created by:** 05_index_construction.do
+
+### wmi_category
+- **Type:** String
+- **Label:** WMI performance category
+- **Values:** "Good" (WMI ≥ 75), "Moderate" (55 ≤ WMI < 75), "Poor" (WMI < 55)
+- **Note:** No state in this sample falls in "Poor" category
+- **Created by:** 05_index_construction.do
+
+---
+
+## Section 4: Dependent Variable — Public Health Expenditure
+
+### phe_per_capita
+- **Type:** Float
+- **Label:** Public health expenditure per capita (INR)
+- **Unit:** Indian Rupees, per capita
+- **Period:** Average of 2019-20 and 2020-21
+- **Definition:** State government health expenditure per capita (public spending only, excludes private/OOP)
+- **Source:** RBI State Finances: A Study of Budgets / National Health Accounts (2019-21)
+- **Source file:** 03_External_Data/public_health_expenditure.csv
+- **Range in data:** 887.0 (Bihar) to 7,437.5 (Kerala)
+- **Note:** The .5 values for most states reflect 2-year averaging (odd + even year / 2)
+- **Important caveat:** 2020-21 includes COVID-19 pandemic period; health spending that year was unusually elevated in some states
+
+### ln_phe
+- **Type:** Float, format %6.3f
+- **Label:** Natural log of PHE per capita (INR)
+- **Formula:** ln(phe_per_capita)
+- **Used in:** All regression models as dependent variable
+- **Rationale:** PHE is right-skewed across states; log-transformation improves normality and allows percentage-change interpretation of coefficients
+- **Range in data:** 6.788 (Bihar) to 8.914 (Kerala)
+
+### phe_year
+- **Type:** String
+- **Label:** Time period for PHE values
+- **Value:** "2019-21 avg" for all observations
+
+### phe_source
+- **Type:** String
+- **Label:** Source of PHE data
+- **Value:** "RBI State Finances / NHA" for all observations
+
+---
+
+## Section 5: Control Variables
+
+### literacy_rate
+- **Type:** Float
+- **Label:** State literacy rate (%, persons aged 7+)
+- **Unit:** Percentage (0–100)
+- **Source:** Census of India 2011, Office of the Registrar General
+- **Source file:** 03_External_Data/literacy_rates.csv
+- **Range in data:** 61.80% (Bihar) to 93.91% (Kerala)
+- **Note:** Census 2011 is the most recent comprehensive census available for all states
+
+### literacy_year
+- **Type:** String
+- **Value:** "2011" for all observations
+
+### gdp_per_capita
+- **Type:** Float
+- **Label:** NSDP per capita (INR, current prices 2019-20)
+- **Unit:** Indian Rupees, per capita, current prices
+- **Source:** RBI Handbook of Statistics on Indian States 2022-23, Table 17 — Net State Domestic Product per capita
+- **Source file:** 03_External_Data/gdp_per_capita.csv
+- **Range in data:** 39,173 (Bihar) to 229,504 (Haryana)
+- **Note:** Current prices used (not constant) to match PHE which is also in current prices. Log-transformed in regression.
+- **Note on old project:** Old project used much smaller values (e.g., Bihar=1,084) which appear to be constant 2011-12 prices. New values are current prices 2019-20.
+
+### ln_gdp
+- **Type:** Float, format %6.3f
+- **Label:** Natural log of GDP per capita (INR, current prices 2019-20)
+- **Formula:** ln(gdp_per_capita)
+- **Used in:** Model 2 and Model 3 as control variable
+
+### gdp_year
+- **Type:** String
+- **Value:** "2019-20" for all observations
+
+### gdp_source
+- **Type:** String
+- **Value:** "RBI Handbook of Statistics on Indian States" for all observations
+
+---
+
+## Section 6: Regression Diagnostics (added in Phase 8)
+
+### fitted_lnphe
+- **Type:** Float
+- **Label:** Fitted ln(PHE) from Model 2
+- **Created by:** 08_regression_analysis.do using `predict, xb` after Model 2
+
+### residual_m2
+- **Type:** Float
+- **Label:** Residual from Model 2
+- **Created by:** 08_regression_analysis.do using `predict, residuals` after Model 2
+- **Interpretation:** Positive = state spends more than model predicts; Negative = spends less
+
+---
+
+## Section 7: Notes on Variables NOT Used
+
+The following variables were present in the original project but are **not used** in this rebuild because they were incorrectly identified:
+
+| Old variable | Old project's claimed meaning | Actual meaning in NFHS-5 |
+|---|---|---|
+| hv209 | Handwashing facility | Has refrigerator |
+| hv226 | Waste disposal method | Cooking fuel type |
+| hv227 | Waste collection frequency | Has mosquito bed net |
+| hv225 | Safe child stool disposal | Shares toilet with other HH |
+
+The following variable was searched for but **not found** in the Household Recode:
+- Child stool disposal: recorded in Individual/Women's Recode, not Household Recode
+- Waste collection frequency: no equivalent variable identified in NFHS-5 HR
+
+---
+
+## Regression Models Summary
+
+| Model | Specification | N | Key result |
+|---|---|---|---|
+| Model 1 | ln(PHE) ~ WMI | 10 | β=+0.039, p=0.034, R²=0.45 |
+| Model 2 | ln(PHE) ~ WMI + literacy + ln(GDP) | 10 | β=+0.014, p=0.652, R²=0.62 |
+| Model 3 | Model 2 excluding Kerala | 9 | β=+0.006, p=0.868, R²=0.43 |
+| Sensitivity 1 | ln(PHE) ~ weighted WMI | 10 | β=+0.042, p=0.032, R²=0.46 |
+| Sensitivity 2 | PHE (levels) ~ WMI | 10 | β=+104.5, p=0.071, R²=0.35 |

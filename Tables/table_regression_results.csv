@@ -1,0 +1,6 @@
+model,variable,coef,se,pvalue,r_squared,adj_r2,n_obs
+Model1_Bivariate,WMI,.03912941,.015362131,.03432744,.44781479,.37879163,10
+Model2_Controlled,WMI,.01420064,.029954931,.65221155,.62023002,.43034506,10
+Model2_Controlled,literacy_rate,.042863697,.029737685,.19955681,,,
+Model2_Controlled,ln_gdp,-.058141775,.61023802,.92719704,,,
+Model3_ExclKerala,WMI,.0056629493,.032288212,.86765665,.42658585,.082537383,9

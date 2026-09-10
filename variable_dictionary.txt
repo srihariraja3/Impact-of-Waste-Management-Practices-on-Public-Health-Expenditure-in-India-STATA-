@@ -1,0 +1,17 @@
+variable,label,dataset,source,unit,type,range_min,range_max,role,notes
+state_name,State name,final_analysis.dta,Created from hv024,Text,String,,,Identifier,Merge key
+pct_improved_toilet,% HH improved toilet,final_analysis.dta,NFHS-5 hv205,Percent,Float,58.3,99.0,WMI component,WHO/JMP codes 11-13-21-22-41
+pct_improved_water,% HH improved water,final_analysis.dta,NFHS-5 hv201,Percent,Float,83.4,98.0,WMI component,WHO/JMP all improved sources
+pct_handwashing,% HH handwashing facility,final_analysis.dta,NFHS-5 hv230a+hv230b+hv232,Percent,Float,46.8,89.0,WMI component,Place+water+soap all required
+pct_safe_waste,% HH safe waste disposal,final_analysis.dta,NFHS-5 sh56a/sh56c/sh56f,Percent,Float,17.1,71.3,WMI component,Any safe method = 1
+pct_private_toilet,% HH private toilet,final_analysis.dta,NFHS-5 hv225,Percent,Float,49.5,99.0,WMI component,hv225=0 means does not share
+wmi,Waste Management Index,final_analysis.dta,Computed from 5 indicators,0-100 scale,Float,55.86,83.78,Key independent variable,Simple average of 5 pct_ variables
+wmi_rank,WMI rank (1=best),final_analysis.dta,Computed,Integer,Integer,1,10,Descriptive,
+wmi_category,WMI category,final_analysis.dta,Computed,Text,String,,,Descriptive,Good/Moderate/Poor
+phe_per_capita,PHE per capita INR,final_analysis.dta,RBI/NHA 2019-21,INR,Float,887.0,7437.5,Dependent variable,2019-21 average
+ln_phe,ln(PHE per capita),final_analysis.dta,Computed,Log INR,Float,6.788,8.914,Dependent variable (regression),ln(phe_per_capita)
+literacy_rate,Literacy rate %,final_analysis.dta,Census of India 2011,Percent,Float,61.80,93.91,Control variable,Persons aged 7+
+gdp_per_capita,NSDP per capita INR,final_analysis.dta,RBI Handbook 2022-23,INR current prices,Float,39173,229504,Control variable,2019-20 current prices
+ln_gdp,ln(GDP per capita),final_analysis.dta,Computed,Log INR,Float,,,Control variable (regression),ln(gdp_per_capita)
+fitted_lnphe,Fitted ln(PHE) Model 2,final_analysis.dta,Computed,Log INR,Float,,,Diagnostic,From predict xb after Model 2
+residual_m2,Residual Model 2,final_analysis.dta,Computed,Log INR,Float,,,Diagnostic,From predict residuals after Model 2

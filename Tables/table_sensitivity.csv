@@ -1,0 +1,5 @@
+specification,beta_wmi,se_wmi,pvalue,r_squared,n_obs,dv,notes
+Model 1: Bivariate (main),.039099999,.0154,.034000002,.44800001,10,ln(PHE),Main result
+Model 2: Controlled (main),.0142,.029999999,.65200001,.62,10,ln(PHE),Main result
+Sensitivity: Weighted WMI,.041741606,.016087364,.031880196,.45697838,10,ln(PHE),Alternative index weights
+Sensitivity: PHE in levels,104.48119,50.158649,.070782714,.35164657,10,PHE levels,Untransformed DV
