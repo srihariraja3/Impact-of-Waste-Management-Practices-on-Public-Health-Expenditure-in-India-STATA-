@@ -1,0 +1,2 @@
+# Impact-of-Waste-Management-Practices-on-Public-Health-Expenditure-in-India-STATA-
+Examined NFHS-5 survey data and state-level PHE to assess how sanitation outcomes and waste management practices correlate with public health spending. Constructed a composite sanitation index and estimated regression models using survey weights, interpreting results through a public policy and fiscal impact lens for high-density states. 
